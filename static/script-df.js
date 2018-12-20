@@ -20,12 +20,16 @@ var myRequest = new Request('http://localhost:5000/data', myInit);
 
 fetch(myRequest)
   .then(function(response) {
-    console.log(response)
-    console.log(JSON.stringify(myJson))
-    return response.json();
+    myJson = response.json()
+    return myJson;
   })
   .then(function(myJson) {
-    console.log(JSON.stringify(myJson));
+    //console.log(JSON.stringify(myJson));
+    //console.log(myJson);
+    for(var i in myJson)
+    {
+      console.log(myJson[i]);
+    }
   });
 
 // add the layer to the map
