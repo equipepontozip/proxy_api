@@ -16,10 +16,12 @@ var myInit = { method: 'GET',
                mode: 'cors',
                cache: 'default' };
 
-var myRequest = new Request('http://localhost:5000', myInit);
+var myRequest = new Request('http://localhost:5000/data', myInit);
 
 fetch(myRequest)
   .then(function(response) {
+    console.log(response)
+    console.log(JSON.stringify(myJson))
     return response.json();
   })
   .then(function(myJson) {
