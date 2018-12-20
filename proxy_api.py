@@ -48,7 +48,7 @@ def proxy():
     original_resp = get_data()
     response = jsonify(original_resp)
 
-    return response
+    return response, 200, {'ContentType':'application/json'}
 
 @app.route('/teste')
 def teste():
