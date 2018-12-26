@@ -19,6 +19,7 @@ var myInit = { method: 'GET',
 var myRequest = new Request('http://localhost:5000/data', myInit);
 
 var baus = []
+var marcadores = []
 
 function converte(onibus,num){
   return {
@@ -27,6 +28,11 @@ function converte(onibus,num){
     long: onibus.GPS_Longitude
   }
 }
+
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 
 fetch(myRequest)
   .then(function(response) {
@@ -43,10 +49,27 @@ fetch(myRequest)
     //console.log(baus)
 
     for(ix in baus){
-      console.log(baus[ix])
+      //console.log(baus[ix])
       var marcador = L.Marker.movingMarker([[baus[ix].lat, baus[ix].long],[baus[ix].lat, baus[ix].long]],
              [1000], {autostart: true}).addTo(map);
+      
+      marcadores.push(marcador)
     }
+
+    console.log(marcadores)
+
+    //await sleep(10000);
+
+    //alert("dormi 10s")
+
+    // brasilia medical center  -15.7641554,-47.8758206
+    ponto = [-15.7641554,-47.8758206]
+
+    for(ix in marcadores){
+      marcadores[ix].moveTo(ponto, 10000);
+    }
+
+    //marcador.moveTo(e.latlng, 2000);
 
   });
 
