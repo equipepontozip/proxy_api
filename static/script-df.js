@@ -18,36 +18,54 @@ var myInit = { method: 'GET',
 
 var myRequest = new Request('http://localhost:5000/data', myInit);
 
+var baus = []
+
+function converte(onibus,num){
+  return {
+    id: num,
+    lat: onibus.GPS_Latitude,
+    long: onibus.GPS_Longitude
+  }
+}
+
 fetch(myRequest)
   .then(function(response) {
     myJson = response.json()
     return myJson;
   })
   .then(function(myJson) {
-    //console.log(JSON.stringify(myJson));
-    //console.log(myJson);
-    for(var i in myJson)
-    {
-      console.log(myJson[i]);
+
+    for(var i in myJson){
+      //console.log(myJson[i]);
+      bau = converte(myJson[i],i)
+      baus.push(bau)
     }
+    //console.log(baus)
+
+    for(ix in baus){
+      console.log(baus[ix])
+      var marcador = L.Marker.movingMarker([[baus[ix].lat, baus[ix].long],[baus[ix].lat, baus[ix].long]],
+             [1000], {autostart: true}).addTo(map);
+    }
+
   });
 
 // add the layer to the map
 map.addLayer(layer);
 
-var parisKievLL = [[48.8567, 2.3508], [50.45, 30.523333]];
-var londonParisRomeBerlinBucarest = [[51.507222, -0.1275], [48.8567, 2.3508],
-[41.9, 12.5], [52.516667, 13.383333], [44.4166,26.1]];
-var londonBrusselFrankfurtAmsterdamLondon = [[51.507222, -0.1275], [50.85, 4.35],
-[50.116667, 8.683333], [52.366667, 4.9], [51.507222, -0.1275]];
-var barcelonePerpignanPauBordeauxMarseilleMonaco = [
-    [41.385064, 2.173403],
-    [42.698611, 2.895556],
-    [43.3017, -0.3686],
-    [44.837912, -0.579541],
-    [43.296346, 5.369889],
-    [43.738418, 7.424616]
-];
+// var parisKievLL = [[48.8567, 2.3508], [50.45, 30.523333]];
+// var londonParisRomeBerlinBucarest = [[51.507222, -0.1275], [48.8567, 2.3508],
+// [41.9, 12.5], [52.516667, 13.383333], [44.4166,26.1]];
+// var londonBrusselFrankfurtAmsterdamLondon = [[51.507222, -0.1275], [50.85, 4.35],
+// [50.116667, 8.683333], [52.366667, 4.9], [51.507222, -0.1275]];
+// var barcelonePerpignanPauBordeauxMarseilleMonaco = [
+//     [41.385064, 2.173403],
+//     [42.698611, 2.895556],
+//     [43.3017, -0.3686],
+//     [44.837912, -0.579541],
+//     [43.296346, 5.369889],
+//     [43.738418, 7.424616]
+// ];
 
 
 
