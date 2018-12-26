@@ -33,6 +33,14 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+async function atualiza(ms) {
+  ponto = [-15.7641554,-47.8758206]
+  await sleep(ms);
+  alert("dormi 10s")
+  for(ix in marcadores){
+    marcadores[ix].moveTo(ponto, 10000);
+  }
+}
 
 fetch(myRequest)
   .then(function(response) {
@@ -58,18 +66,14 @@ fetch(myRequest)
 
     console.log(marcadores)
 
-    //await sleep(10000);
+    atualiza(10000, marcadores);
 
-    //alert("dormi 10s")
+    // // brasilia medical center  -15.7641554,-47.8758206
+    // ponto = [-15.7641554,-47.8758206]
 
-    // brasilia medical center  -15.7641554,-47.8758206
-    ponto = [-15.7641554,-47.8758206]
-
-    for(ix in marcadores){
-      marcadores[ix].moveTo(ponto, 10000);
-    }
-
-    //marcador.moveTo(e.latlng, 2000);
+    // for(ix in marcadores){
+    //   marcadores[ix].moveTo(ponto, 10000);
+    // }
 
   });
 
