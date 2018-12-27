@@ -25,7 +25,10 @@ function converte(onibus,num){
   return {
     id: num,
     lat: onibus.GPS_Latitude,
-    long: onibus.GPS_Longitude
+    long: onibus.GPS_Longitude,
+    id: onibus.Prefixo,
+    linha: onibus.Linha,
+    velo: onibus.Velocidade
   }
 }
 
@@ -76,7 +79,9 @@ fetch(myRequest)
       //console.log(baus[ix])
       var marcador = L.Marker.movingMarker([[baus[ix].lat, baus[ix].long],[baus[ix].lat, baus[ix].long]],
              [1000], {autostart: true}).addTo(map);
-      
+      marcador.bindPopup("<b>id:</b>"+baus[ix].id +
+      "<br><b>linha:</b>"+ baus[ix].linha
+    )
       marcadores.push(marcador)
     }
 
