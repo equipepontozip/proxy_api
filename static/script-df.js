@@ -51,7 +51,7 @@ async function atualiza(ms) {
     }
     for(ix in marcadores){
       //console.log([baus[ix].lat, baus[ix].long])
-      marcadores[ix].moveTo([baus[ix].lat, baus[ix].long], 1000);
+      marcadores[ix].moveTo([baus[ix].lat, baus[ix].long], 8000);
     }
   });
 
