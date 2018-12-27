@@ -34,8 +34,9 @@ function sleep(ms) {
 }
 
 async function atualiza(ms) {
+  while (1==1){
   await sleep(ms);
-  alert("dormi 10s")
+  //alert("dormi 10s")
   fetch(myRequest)
   .then(function(response) {
     myJson = response.json()
@@ -54,7 +55,7 @@ async function atualiza(ms) {
     }
   });
 
-  
+}
 }
 
 fetch(myRequest)
@@ -81,7 +82,7 @@ fetch(myRequest)
 
     //console.log(marcadores)
 
-    atualiza(10000, marcadores);
+    atualiza(5000, marcadores);
 
     // // brasilia medical center  -15.7641554,-47.8758206
     // ponto = [-15.7641554,-47.8758206]
