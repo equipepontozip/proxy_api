@@ -19,14 +19,16 @@ var myInit = { method: 'GET',
 var myRequest = new Request('http://localhost:5000/data', myInit);
 
 var baus = []
+var bausDict = []
 var marcadores = []
+var marcadoresDict = []
 
 function converte(onibus,num){
   return {
     id: num,
     lat: onibus.GPS_Latitude,
     long: onibus.GPS_Longitude,
-    id: onibus.Prefixo,
+    prefixo: onibus.Prefixo,
     linha: onibus.Linha,
     velo: onibus.Velocidade
   }
@@ -36,7 +38,7 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function atualiza(ms) {
+async function atualiza(ms,marcadoresDict) {
   while (1==1){
   
   await sleep(ms);
@@ -48,14 +50,20 @@ async function atualiza(ms) {
   })
   .then(function(myJson) {
     baus = []
+    bausDict = []
     for(var i in myJson){
       //console.log(myJson[i]);
       bau = converte(myJson[i],i)
       baus.push(bau)
+      bausDict[bau.prefixo] = bau
     }
-    for(ix in marcadores){
+    //for(ix in marcadores){
       //console.log([baus[ix].lat, baus[ix].long])
-      marcadores[ix].moveTo([baus[ix].lat, baus[ix].long], 8000);
+      //marcadores[ix].moveTo([baus[ix].lat, baus[ix].long], 8000);
+    //}
+    for (var key in marcadoresDict) {
+      console.log([bausDict[key].lat,bausDict[key].long])
+      marcadoresDict[key].moveTo([bausDict[key].lat,bausDict[key].long],8000)
     }
   });
 
@@ -75,22 +83,25 @@ fetch(myRequest)
       //console.log(myJson[i]);
       bau = converte(myJson[i],i)
       baus.push(bau)
+      bausDict[bau.prefixo] = bau
     }
-    //console.log(baus)
+    //console.log(bausDict)
 
     for(ix in baus){
       //console.log(baus[ix])
       var marcador = L.Marker.movingMarker([[baus[ix].lat, baus[ix].long],[baus[ix].lat, baus[ix].long]],
              [1000], {autostart: true}).addTo(map);
-      marcador.bindPopup("<b>id:</b>"+baus[ix].id +
+      marcador.bindPopup("<b>id:</b>"+baus[ix].prefixo +
       "<br><b>linha:</b>"+ baus[ix].linha
     )
       marcadores.push(marcador)
+      //marcadoresDict.push({key: bau.prefixo, obj: marcador})
+      marcadoresDict[baus[ix].prefixo] = marcador
     }
 
-    //console.log(marcadores)
+    console.log(marcadoresDict)
 
-    atualiza(5000, marcadores);
-
+    //atualiza(5000, marcadores);
+    atualiza(5000, marcadoresDict);
 
   });
