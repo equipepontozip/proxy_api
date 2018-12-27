@@ -34,12 +34,27 @@ function sleep(ms) {
 }
 
 async function atualiza(ms) {
-  ponto = [-15.7641554,-47.8758206]
   await sleep(ms);
   alert("dormi 10s")
-  for(ix in marcadores){
-    marcadores[ix].moveTo(ponto, 10000);
-  }
+  fetch(myRequest)
+  .then(function(response) {
+    myJson = response.json()
+    return myJson;
+  })
+  .then(function(myJson) {
+    baus = []
+    for(var i in myJson){
+      //console.log(myJson[i]);
+      bau = converte(myJson[i],i)
+      baus.push(bau)
+    }
+    for(ix in marcadores){
+      //console.log([baus[ix].lat, baus[ix].long])
+      marcadores[ix].moveTo([baus[ix].lat, baus[ix].long], 1000);
+    }
+  });
+
+  
 }
 
 fetch(myRequest)
@@ -64,7 +79,7 @@ fetch(myRequest)
       marcadores.push(marcador)
     }
 
-    console.log(marcadores)
+    //console.log(marcadores)
 
     atualiza(10000, marcadores);
 
