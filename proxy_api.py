@@ -2,11 +2,17 @@ import json
 from urllib import request
 
 import pandas as pd
+import numpy as np
 from flask import Flask
 from flask import jsonify, render_template
 
 app = Flask(__name__,template_folder='./static')
-ORIGINAL_URL='http://00224.transdatasmart.com.br:22401/ITS-infoexport/api/Data/VeiculosGTFS'
+
+# piracicabana
+# ORIGINAL_URL='http://00224.transdatasmart.com.br:22401/ITS-infoexport/api/Data/VeiculosGTFS'
+
+# pioneira
+ORIGINAL_URL='http://00078.transdatasmart.com.br:7801/ITS-InfoExport/api/Data/VeiculosGTFS'
 
 def get_data():
     req = request.Request(ORIGINAL_URL, method='GET')
@@ -30,6 +36,12 @@ def convert_lat_long(df):
 
 def process_data(df):
     df = df.apply(convert_lat_long, axis=1)
+    
+    # limpa campos com string vazia -> ""
+    df['GPS_Latitude'].replace('', np.nan, inplace=True)
+    df['GPS_Longitude'].replace('', np.nan, inplace=True)
+    df = df.dropna(subset=['GPS_Latitude', 'GPS_Longitude'])
+
     df.GPS_Latitude = df.GPS_Latitude.astype(float)
     df.GPS_Longitude = df.GPS_Longitude.astype(float)
 
