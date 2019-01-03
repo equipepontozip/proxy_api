@@ -30,7 +30,8 @@ function converte(onibus,num){
     long: onibus.GPS_Longitude,
     prefixo: onibus.Prefixo,
     linha: onibus.Linha,
-    velo: onibus.Velocidade
+    velo: onibus.Velocidade,
+    angulo: onibus.GPS_Direcao
   }
 }
 
@@ -88,9 +89,10 @@ fetch(myRequest)
     //console.log(bausDict)
 
     for(ix in baus){
-      //console.log(baus[ix])
+      var busAngle = Math.abs(parseFloat(baus[ix].angulo.replace(/,/, '.')))
+      console.log(busAngle)
       var marcador = L.Marker.movingMarker([[baus[ix].lat, baus[ix].long],[baus[ix].lat, baus[ix].long]],
-             [1000], {autostart: true}).addTo(map);
+        [1000], {autostart: true, rotationAngle: busAngle}).addTo(map);
       marcador.bindPopup("<b>id:</b>"+baus[ix].prefixo +
       "<br><b>linha:</b>"+ baus[ix].linha
     )
