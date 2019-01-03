@@ -90,9 +90,10 @@ fetch(myRequest)
 
     for(ix in baus){
       var busAngle = Math.abs(parseFloat(baus[ix].angulo.replace(/,/, '.')))
+      var busIcon = L.icon({iconUrl: 'static/img/bus.png', iconSize: [14, 32], iconAnchor: [7, 18]})
       console.log(busAngle)
       var marcador = L.Marker.movingMarker([[baus[ix].lat, baus[ix].long],[baus[ix].lat, baus[ix].long]],
-        [1000], {autostart: true, rotationAngle: busAngle}).addTo(map);
+        [1000], {autostart: true, rotationAngle: busAngle, icon: busIcon}).addTo(map);
       marcador.bindPopup("<b>id:</b>"+baus[ix].prefixo +
       "<br><b>linha:</b>"+ baus[ix].linha
     )
