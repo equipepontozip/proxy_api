@@ -16,7 +16,8 @@ var myInit = { method: 'GET',
                mode: 'cors',
                cache: 'default' };
 
-var myRequest = new Request('http://localhost:5000/data', myInit);
+//var myRequest = new Request('http://localhost:5000/data', myInit);
+var myRequest = new Request('https://busao-em-tempo-real.herokuapp.com/data', myInit);
 
 var baus = []
 var bausDict = []
