@@ -4,6 +4,6 @@ services:
   api:
     build: .
     ports:
-      - 5000:$PORT
+      - 5000:5000
     volumes:
       - .:/api
