@@ -16,7 +16,7 @@ var myInit = { method: 'GET',
                mode: 'cors',
                cache: 'default' };
 
-var myRequest = new Request('http://localhost:5000/data', myInit);
+var myRequest = new Request('http://cademeubau.com.br/data', myInit);
 
 var baus = []
 var bausDict = []
