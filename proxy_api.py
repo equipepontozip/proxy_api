@@ -65,3 +65,7 @@ def proxy():
 @app.route('/teste')
 def teste():
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
+
+import os
+port = int(os.environ.get("PORT", 5000))
+app.run(host='0.0.0.0', port=port)
