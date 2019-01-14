@@ -16,8 +16,7 @@ var myInit = { method: 'GET',
                mode: 'cors',
                cache: 'default' };
 
-//var myRequest = new Request('http://localhost:5000/data', myInit);
-var myRequest = new Request('https://busao-em-tempo-real.herokuapp.com/data', myInit);
+var myRequest = new Request('http://cademeubau.com.br/data', myInit);
 
 var baus = []
 var bausDict = []
@@ -31,7 +30,8 @@ function converte(onibus,num){
     long: onibus.GPS_Longitude,
     prefixo: onibus.Prefixo,
     linha: onibus.Linha,
-    velo: onibus.Velocidade
+    velo: onibus.Velocidade,
+    angulo: onibus.GPS_Direcao
   }
 }
 
@@ -89,9 +89,11 @@ fetch(myRequest)
     //console.log(bausDict)
 
     for(ix in baus){
-      //console.log(baus[ix])
+      var busAngle = Math.abs(parseFloat(baus[ix].angulo.replace(/,/, '.')))
+      var busIcon = L.icon({iconUrl: 'static/img/bus.png', iconSize: [14, 32], iconAnchor: [7, 18]})
+      console.log(busAngle)
       var marcador = L.Marker.movingMarker([[baus[ix].lat, baus[ix].long],[baus[ix].lat, baus[ix].long]],
-             [1000], {autostart: true}).addTo(map);
+        [1000], {autostart: true, rotationAngle: busAngle, icon: busIcon}).addTo(map);
       marcador.bindPopup("<b>id:</b>"+baus[ix].prefixo +
       "<br><b>linha:</b>"+ baus[ix].linha
     )
