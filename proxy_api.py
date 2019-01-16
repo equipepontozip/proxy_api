@@ -9,23 +9,30 @@ from flask import jsonify, render_template
 app = Flask(__name__,template_folder='./static')
 
 # piracicabana
-# ORIGINAL_URL='http://00224.transdatasmart.com.br:22401/ITS-infoexport/api/Data/VeiculosGTFS'
-
+#piracicabana='http://00224.transdatasmart.com.br:22401/ITS-infoexport/api/Data/VeiculosGTFS'
 # pioneira
-ORIGINAL_URL='http://00078.transdatasmart.com.br:7801/ITS-InfoExport/api/Data/VeiculosGTFS'
+pioneira='http://00078.transdatasmart.com.br:7801/ITS-InfoExport/api/Data/VeiculosGTFS'
+
+#urls = [pioneira,piracicabana]
+urls = [pioneira]
 
 def get_data():
-    req = request.Request(ORIGINAL_URL, method='GET')
-    app.logger.info('Requesting on %s' % ORIGINAL_URL)
 
-    response = request.urlopen(req)
-    body = response.read().decode('utf-8')
-    body = json.loads(body)
+    df = pd.DataFrame()
 
-    df = pd.DataFrame.from_records(body['Dados'], columns=body['Campos'])
+    for url in urls:
+        req = request.Request(url, method='GET')
+        app.logger.info('Requesting on %s' % url)
+        response = request.urlopen(req)
+        body = response.read().decode('utf-8')
+        body = json.loads(body)
+        url_df = pd.DataFrame.from_records(body['Dados'], columns=body['Campos'])
+        url_df = process_data(url_df)
 
-    df = process_data(df)
-
+    df.append(url_df)
+    print(df.columns)
+    print(url_df)
+    
     return df.to_dict(orient='records')
 
 def convert_lat_long(df):
