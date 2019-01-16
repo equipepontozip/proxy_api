@@ -65,6 +65,8 @@ async function atualiza(ms,marcadoresDict) {
     for (var key in marcadoresDict) {
       console.log([bausDict[key].lat,bausDict[key].long])
       marcadoresDict[key].moveTo([bausDict[key].lat,bausDict[key].long],8000)
+      var busAngle = Math.abs(parseFloat(bausDict[key].angulo.replace(/,/, '.')))
+      marcadoresDict[key].setRotationAngle(busAngle)
     }
   });
 
