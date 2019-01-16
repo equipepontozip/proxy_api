@@ -39,6 +39,10 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function getAtan2(y, x) {
+  return Math.atan2(y, x);
+};
+
 async function atualiza(ms,marcadoresDict) {
   while (1==1){
   
@@ -58,15 +62,28 @@ async function atualiza(ms,marcadoresDict) {
       baus.push(bau)
       bausDict[bau.prefixo] = bau
     }
-    //for(ix in marcadores){
-      //console.log([baus[ix].lat, baus[ix].long])
-      //marcadores[ix].moveTo([baus[ix].lat, baus[ix].long], 8000);
-    //}
+
     for (var key in marcadoresDict) {
-      console.log([bausDict[key].lat,bausDict[key].long])
+      //console.log([bausDict[key].lat,bausDict[key].long])
       marcadoresDict[key].moveTo([bausDict[key].lat,bausDict[key].long],8000)
-      var busAngle = Math.abs(parseFloat(bausDict[key].angulo.replace(/,/, '.')))
-      marcadoresDict[key].setRotationAngle(busAngle)
+      
+      var oldPos = marcadoresDict[key].getLatLng()
+
+      endLng = bausDict[key].long
+      endLat = bausDict[key].lat
+      startLng = oldPos.lng
+      startLat = oldPos.lat
+
+      var radians = getAtan2((endLng - startLng), (endLat - startLat));
+      
+      var busAngle = radians * (180 / Math.PI)
+
+      //caso haja mudança de localização, atualiza a rotação
+      if(busAngle != 0){
+        marcadoresDict[key].setRotationAngle(busAngle)
+      }
+
+      
     }
   });
 
@@ -93,7 +110,7 @@ fetch(myRequest)
     for(ix in baus){
       var busAngle = Math.abs(parseFloat(baus[ix].angulo.replace(/,/, '.')))
       var busIcon = L.icon({iconUrl: 'static/img/bus.png', iconSize: [14, 32], iconAnchor: [7, 18]})
-      console.log(busAngle)
+      //console.log(busAngle)
       var marcador = L.Marker.movingMarker([[baus[ix].lat, baus[ix].long],[baus[ix].lat, baus[ix].long]],
         [1000], {autostart: true, rotationAngle: busAngle, icon: busIcon}).addTo(map);
       marcador.bindPopup("<b>id:</b>"+baus[ix].prefixo +
@@ -104,7 +121,7 @@ fetch(myRequest)
       marcadoresDict[baus[ix].prefixo] = marcador
     }
 
-    console.log(marcadoresDict)
+    //console.log(marcadoresDict)
 
     //atualiza(5000, marcadores);
     atualiza(5000, marcadoresDict);
