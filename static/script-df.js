@@ -16,7 +16,7 @@ var myInit = { method: 'GET',
                mode: 'cors',
                cache: 'default' };
 
-var myRequest = new Request('http://cademeubau.com.br/data', myInit);
+var myRequest = new Request('http://0.0.0.0/data', myInit);
 
 var baus = []
 var bausDict = []
@@ -92,6 +92,8 @@ async function atualiza(ms,marcadoresDict) {
 
 map.addLayer(layer);
 
+var layer_bus;
+
 fetch(myRequest)
   .then(function(response) {
     myJson = response.json()
@@ -111,8 +113,9 @@ fetch(myRequest)
       var busAngle = Math.abs(parseFloat(baus[ix].angulo.replace(/,/, '.')))
       var busIcon = L.icon({iconUrl: 'static/img/bus.png', iconSize: [14, 32], iconAnchor: [7, 18]})
       //console.log(busAngle)
+	
       var marcador = L.Marker.movingMarker([[baus[ix].lat, baus[ix].long],[baus[ix].lat, baus[ix].long]],
-        [1000], {autostart: true, rotationAngle: busAngle, icon: busIcon}).addTo(map);
+        [1000], {autostart: true, rotationAngle: busAngle, icon: busIcon, title: baus[ix].linha});
       marcador.bindPopup("<b>id:</b>"+baus[ix].prefixo +
       "<br><b>linha:</b>"+ baus[ix].linha
     )
@@ -120,10 +123,24 @@ fetch(myRequest)
       //marcadoresDict.push({key: bau.prefixo, obj: marcador})
       marcadoresDict[baus[ix].prefixo] = marcador
     }
+	layer_bus = L.layerGroup(marcadores)
+	map.addLayer(layer_bus)
 
-    //console.log(marcadoresDict)
-
-    //atualiza(5000, marcadores);
     atualiza(5000, marcadoresDict);
 
   });
+
+function filter_remove_inactive() {
+	var marcadores_ativos = [];
+
+	for(ix in marcadores){
+		if(marcadores[ix].options.title !== ''){
+			marcadores_ativos.push(marcadores[ix])
+		} 
+	}
+
+	marcadores_ativos = L.layerGroup(marcadores_ativos)
+
+	map.removeLayer(layer_bus)
+	map.addLayer(marcadores_ativos)
+}
