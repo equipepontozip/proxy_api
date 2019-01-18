@@ -22,6 +22,7 @@ var baus = []
 var bausDict = []
 var marcadores = []
 var marcadoresDict = []
+var layerBus;
 
 function converte(onibus,num){
   return {
@@ -92,38 +93,77 @@ async function atualiza(ms,marcadoresDict) {
 
 map.addLayer(layer);
 
-fetch(myRequest)
-  .then(function(response) {
-    myJson = response.json()
-    return myJson;
-  })
-  .then(function(myJson) {
+initialLoad()
 
-    for(var i in myJson){
-      //console.log(myJson[i]);
-      bau = converte(myJson[i],i)
-      baus.push(bau)
-      bausDict[bau.prefixo] = bau
-    }
-    //console.log(bausDict)
+function initialLoad() {
+  fetch(myRequest)
+    .then(function(response) {
+      myJson = response.json()
+      return myJson;
+    })
+    .then(function(myJson) {
 
-    for(ix in baus){
-      var busAngle = Math.abs(parseFloat(baus[ix].angulo.replace(/,/, '.')))
-      var busIcon = L.icon({iconUrl: 'static/img/bus.png', iconSize: [14, 32], iconAnchor: [7, 18]})
-      //console.log(busAngle)
-      var marcador = L.Marker.movingMarker([[baus[ix].lat, baus[ix].long],[baus[ix].lat, baus[ix].long]],
-        [1000], {autostart: true, rotationAngle: busAngle, icon: busIcon}).addTo(map);
-      marcador.bindPopup("<b>id:</b>"+baus[ix].prefixo +
-      "<br><b>linha:</b>"+ baus[ix].linha
-    )
-      marcadores.push(marcador)
-      //marcadoresDict.push({key: bau.prefixo, obj: marcador})
-      marcadoresDict[baus[ix].prefixo] = marcador
-    }
+      for(var i in myJson){
+        //console.log(myJson[i]);
+        bau = converte(myJson[i],i)
+        baus.push(bau)
+        bausDict[bau.prefixo] = bau
+      }
+      //console.log(bausDict)
 
-    //console.log(marcadoresDict)
+      for(ix in baus){
+        var busAngle = Math.abs(parseFloat(baus[ix].angulo.replace(/,/, '.')))
+        var busIcon = L.icon({iconUrl: 'static/img/bus.png', iconSize: [14, 32], iconAnchor: [7, 18]})
+        //console.log(busAngle)
 
-    //atualiza(5000, marcadores);
-    atualiza(5000, marcadoresDict);
+        var marcador = L.Marker.movingMarker([[baus[ix].lat, baus[ix].long],[baus[ix].lat, baus[ix].long]],
+          [1000], {autostart: true, rotationAngle: busAngle, icon: busIcon, title: baus[ix].linha});
+        marcador.bindPopup("<b>id:</b>"+baus[ix].prefixo +
+          "<br><b>linha:</b>"+ baus[ix].linha
+        )
+        marcadores.push(marcador)
+        //marcadoresDict.push({key: bau.prefixo, obj: marcador})
+        marcadoresDict[baus[ix].prefixo] = marcador
+      }
+      layerBus= L.layerGroup(marcadores)
+      map.addLayer(layerBus)
 
-  });
+      atualiza(5000, marcadoresDict);
+
+    });
+}
+
+function filterRemoveInactive() {
+	var marcadoresAtivos = [];
+
+	for(ix in marcadores){
+		if(marcadores[ix].options.title !== ''){
+			marcadoresAtivos.push(marcadores[ix])
+		} 
+	}
+
+	marcadoresAtivos = L.layerGroup(marcadores_ativos)
+
+	map.removeLayer(layerBus)
+	map.addLayer(marcadoresAtivos)
+}
+
+function filter_specfic_lines(busLine) {
+	var filteredLines = []
+
+	for(ix in marcadores){
+		if(marcadores[ix].options.title === busLine){
+			filteredLines.push(marcadores[ix])
+		}
+	}
+
+	filteredLines = L.layerGroup(filteredLines)
+
+    map.removeLayer(layerBus)
+	map.addLayer(filteredLines)
+}
+
+function filterBox() {
+  var searchContent = document.getElementById('filter-bus-line').value
+  filter_specfic_lines(searchContent)
+}
