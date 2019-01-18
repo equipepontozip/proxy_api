@@ -16,12 +16,13 @@ var myInit = { method: 'GET',
                mode: 'cors',
                cache: 'default' };
 
-var myRequest = new Request('http://0.0.0.0/data', myInit);
+var myRequest = new Request('http://cademeubau.com.br/data', myInit);
 
 var baus = []
 var bausDict = []
 var marcadores = []
 var marcadoresDict = []
+var layerBus;
 
 function converte(onibus,num){
   return {
@@ -92,11 +93,9 @@ async function atualiza(ms,marcadoresDict) {
 
 map.addLayer(layer);
 
-var layer_bus;
+initialLoad()
 
-initial_load()
-
-function initial_load() {
+function initialLoad() {
   fetch(myRequest)
     .then(function(response) {
       myJson = response.json()
@@ -126,40 +125,45 @@ function initial_load() {
         //marcadoresDict.push({key: bau.prefixo, obj: marcador})
         marcadoresDict[baus[ix].prefixo] = marcador
       }
-      layer_bus = L.layerGroup(marcadores)
-      map.addLayer(layer_bus)
+      layerBus= L.layerGroup(marcadores)
+      map.addLayer(layerBus)
 
       atualiza(5000, marcadoresDict);
 
     });
 }
 
-function filter_remove_inactive() {
-	var marcadores_ativos = [];
+function filterRemoveInactive() {
+	var marcadoresAtivos = [];
 
 	for(ix in marcadores){
 		if(marcadores[ix].options.title !== ''){
-			marcadores_ativos.push(marcadores[ix])
+			marcadoresAtivos.push(marcadores[ix])
 		} 
 	}
 
-	marcadores_ativos = L.layerGroup(marcadores_ativos)
+	marcadoresAtivos = L.layerGroup(marcadores_ativos)
 
-	map.removeLayer(layer_bus)
-	map.addLayer(marcadores_ativos)
+	map.removeLayer(layerBus)
+	map.addLayer(marcadoresAtivos)
 }
 
 function filter_specfic_lines(busLine) {
-	var filtered_lines = []
+	var filteredLines = []
 
 	for(ix in marcadores){
 		if(marcadores[ix].options.title === busLine){
-			filtered_lines.push(marcadores[ix])
+			filteredLines.push(marcadores[ix])
 		}
 	}
 
-	filtered_lines = L.layerGroup(filtered_lines)
+	filteredLines = L.layerGroup(filteredLines)
 
-    map.removeLayer(layer_bus)
-	map.addLayer(filtered_lines)
+    map.removeLayer(layerBus)
+	map.addLayer(filteredLines)
+}
+
+function filterBox() {
+  var searchContent = document.getElementById('filter-bus-line').value
+  filter_specfic_lines(searchContent)
 }
