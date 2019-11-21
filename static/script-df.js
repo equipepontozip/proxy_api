@@ -16,6 +16,9 @@ var myInit = { method: 'GET',
                mode: 'cors',
                cache: 'default' };
 
+//dev
+//var myRequest = new Request('http://localhost/data', myInit);
+//prod
 var myRequest = new Request('http://cademeubau.com.br/data', myInit);
 
 var baus = []
@@ -29,10 +32,10 @@ function converte(onibus,num){
     id: num,
     lat: onibus.GPS_Latitude,
     long: onibus.GPS_Longitude,
-    prefixo: onibus.Prefixo,
-    linha: onibus.Linha,
-    velo: onibus.Velocidade,
-    angulo: onibus.GPS_Direcao
+    prefixo: onibus.numero,
+    linha: onibus.linha,
+    velo: 0,
+    angulo: onibus.direcao
   }
 }
 
@@ -112,7 +115,7 @@ function initialLoad() {
       //console.log(bausDict)
 
       for(ix in baus){
-        var busAngle = Math.abs(parseFloat(baus[ix].angulo.replace(/,/, '.')))
+        var busAngle = Math.abs(parseFloat(baus[ix].angulo))
         var busIcon = L.icon({iconUrl: 'static/img/bus.png', iconSize: [14, 32], iconAnchor: [7, 18]})
         //console.log(busAngle)
 

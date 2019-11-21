@@ -12,7 +12,7 @@ app = Flask(__name__,template_folder='./static')
 # ORIGINAL_URL='http://00224.transdatasmart.com.br:22401/ITS-infoexport/api/Data/VeiculosGTFS'
 
 # pioneira
-ORIGINAL_URL='http://00078.transdatasmart.com.br:7801/ITS-InfoExport/api/Data/VeiculosGTFS'
+ORIGINAL_URL='https://www.sistemas.dftrans.df.gov.br/service/gps/operacoes'
 
 def get_data():
     req = request.Request(ORIGINAL_URL, method='GET')
@@ -22,22 +22,31 @@ def get_data():
     body = response.read().decode('utf-8')
     body = json.loads(body)
 
-    df = pd.DataFrame.from_records(body['Dados'], columns=body['Campos'])
-
+#    df = pd.DataFrame.from_records(body['Dados'], columns=body['Campos'])
+    df = pd.DataFrame()
+    for operadora in body:
+        df_temp = pd.DataFrame.from_records(operadora['veiculos'])
+        df = pd.concat([df,df_temp], ignore_index=True)
+    
     df = process_data(df)
 
     return df.to_dict(orient='records')
 
-def convert_lat_long(df):
-    df['GPS_Latitude'] = df['GPS_Latitude'].replace(',', '.')
-    df['GPS_Longitude'] = df['GPS_Longitude'].replace(',', '.')
+#def convert_lat_long(df):
+#    df['GPS_Latitude'] = df['GPS_Latitude'].replace(',', '.')
+#    df['GPS_Longitude'] = df['GPS_Longitude'].replace(',', '.')
 
-    return df
+#    return df
 
 def process_data(df):
-    df = df.apply(convert_lat_long, axis=1)
+    #df = df.apply(convert_lat_long, axis=1)
+    df_lat_long = df.localizacao.apply(pd.Series)
+    df = df.merge(df_lat_long, on=df.index)
     
     # limpa campos com string vazia -> ""
+    df['GPS_Latitude'] = df['latitude']
+    df['GPS_Longitude'] = df['longitude']
+
     df['GPS_Latitude'].replace('', np.nan, inplace=True)
     df['GPS_Longitude'].replace('', np.nan, inplace=True)
     df = df.dropna(subset=['GPS_Latitude', 'GPS_Longitude'])
