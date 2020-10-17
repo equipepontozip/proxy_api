@@ -69,24 +69,31 @@ async function atualiza(ms,marcadoresDict) {
 
     for (var key in marcadoresDict) {
       //console.log([bausDict[key].lat,bausDict[key].long])
-      marcadoresDict[key].moveTo([bausDict[key].lat,bausDict[key].long],8000)
-      
-      var oldPos = marcadoresDict[key].getLatLng()
+      // console.log(key)
+      // console.log(bausDict[key])
 
-      endLng = bausDict[key].long
-      endLat = bausDict[key].lat
-      startLng = oldPos.lng
-      startLat = oldPos.lat
+      // checks if the bus is in the new request, sometimes buses vanish from request to request
+      // If it vanishes, leave the bus in the same location on the map for now
+      if(key in bausDict){
 
-      var radians = getAtan2((endLng - startLng), (endLat - startLat));
-      
-      var busAngle = radians * (180 / Math.PI)
+        marcadoresDict[key].moveTo([bausDict[key].lat,bausDict[key].long],8000)
 
-      //caso haja mudança de localização, atualiza a rotação
-      if(busAngle != 0){
-        marcadoresDict[key].setRotationAngle(busAngle)
+        var oldPos = marcadoresDict[key].getLatLng()
+
+        endLng = bausDict[key].long
+        endLat = bausDict[key].lat
+        startLng = oldPos.lng
+        startLat = oldPos.lat
+
+        var radians = getAtan2((endLng - startLng), (endLat - startLat));
+        
+        var busAngle = radians * (180 / Math.PI)
+
+        //caso haja mudança de localização, atualiza a rotação
+        if(busAngle != 0){
+          marcadoresDict[key].setRotationAngle(busAngle)
+        }
       }
-
       
     }
   });
