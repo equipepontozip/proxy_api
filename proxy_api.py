@@ -7,7 +7,7 @@ from flask import Flask
 from flask import jsonify, render_template
 
 app = Flask(__name__,template_folder='./static')
-
+FILTER = True
 # piracicabana
 # ORIGINAL_URL='http://00224.transdatasmart.com.br:22401/ITS-infoexport/api/Data/VeiculosGTFS'
 
@@ -30,13 +30,10 @@ def get_data():
     
     df = process_data(df)
 
+    if(FILTER):
+        df = apply_filters(df)
+
     return df.to_dict(orient='records')
-
-#def convert_lat_long(df):
-#    df['GPS_Latitude'] = df['GPS_Latitude'].replace(',', '.')
-#    df['GPS_Longitude'] = df['GPS_Longitude'].replace(',', '.')
-
-#    return df
 
 def process_data(df):
     #df = df.apply(convert_lat_long, axis=1)
@@ -53,7 +50,16 @@ def process_data(df):
 
     df.GPS_Latitude = df.GPS_Latitude.astype(float)
     df.GPS_Longitude = df.GPS_Longitude.astype(float)
+    df.drop(columns=['latitude','longitude','localizacao'], inplace=True)
 
+    return df
+
+def apply_filters(df):
+    
+    linhas = ['0.195', '147.5', '147.6', '180.1', '180.2', '181.2', '181.4', '8002','106.2','0.147','2207','2209']
+    
+    df = df[df.linha.isin(linhas)]
+    
     return df
 
 @app.route('/')
