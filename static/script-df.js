@@ -17,9 +17,9 @@ var myInit = { method: 'GET',
                cache: 'default' };
 
 //dev
-//var myRequest = new Request('http://localhost/data', myInit);
+var myRequest = new Request('http://localhost/data', myInit);
 //prod
-var myRequest = new Request('http://cademeubau.com.br/data', myInit);
+//var myRequest = new Request('http://cademeubau.com.br/data', myInit);
 
 var baus = []
 var bausDict = []

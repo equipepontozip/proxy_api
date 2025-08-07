@@ -1,4 +1,5 @@
 import json
+import ssl
 from urllib import request
 
 import pandas as pd
@@ -15,10 +16,16 @@ FILTER = True
 ORIGINAL_URL='https://www.sistemas.dftrans.df.gov.br/service/gps/operacoes'
 
 def get_data():
+
+    # Create unverified SSL context
+    ssl_context = ssl.create_default_context()
+    ssl_context.check_hostname = False
+    ssl_context.verify_mode = ssl.CERT_NONE
+
     req = request.Request(ORIGINAL_URL, method='GET')
     app.logger.info('Requesting on %s' % ORIGINAL_URL)
 
-    response = request.urlopen(req)
+    response = request.urlopen(req, context=ssl_context)
     body = response.read().decode('utf-8')
     body = json.loads(body)
 
