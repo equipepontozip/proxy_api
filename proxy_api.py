@@ -1,14 +1,36 @@
 import json
 import ssl
+import time
 from urllib import request
-
+import os
 import pandas as pd
 import numpy as np
-from flask import Flask
-from flask import jsonify, render_template
+from flask import Flask, jsonify, render_template
 
 app = Flask(__name__,template_folder='./static')
-FILTER = True
+FILTER = False
+
+
+class DataCache:
+    def __init__(self, cache_duration=5):
+        self.data = None
+        self.timestamp = 0
+        self.cache_duration = cache_duration
+    
+    def is_valid(self):
+        return self.data is not None and (time.time() - self.timestamp) < self.cache_duration
+    
+    def get(self):
+        return self.data
+    
+    def set(self, data):
+        self.data = data
+        self.timestamp = time.time()
+
+
+# Create cache instance
+cache = DataCache(cache_duration=5)
+
 # piracicabana
 # ORIGINAL_URL='http://00224.transdatasmart.com.br:22401/ITS-infoexport/api/Data/VeiculosGTFS'
 
@@ -16,7 +38,10 @@ FILTER = True
 ORIGINAL_URL='https://www.sistemas.dftrans.df.gov.br/service/gps/operacoes'
 
 def get_data():
-
+    # Check if cache is valid
+    if cache.is_valid():
+        return cache.get()
+    
     # Create unverified SSL context
     ssl_context = ssl.create_default_context()
     ssl_context.check_hostname = False
@@ -40,7 +65,11 @@ def get_data():
     if(FILTER):
         df = apply_filters(df)
 
-    return df.to_dict(orient='records')
+    # Update cache
+    data = df.to_dict(orient='records')
+    cache.set(data)
+    
+    return data
 
 def process_data(df):
     #df = df.apply(convert_lat_long, axis=1)
@@ -88,6 +117,7 @@ def proxy():
 def teste():
     return json.dumps({'success':True}), 200, {'ContentType':'application/json'} 
 
-import os
-port = int(os.environ.get("PORT", 5000))
-app.run(host='0.0.0.0', port=port)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    
+    app.run(host="0.0.0.0", port=port, use_reloader=False)
